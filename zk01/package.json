@@ -1,0 +1,16 @@
+{
+  "name": "testt11",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node ./bins/index.js"
+  },
+  "bin": {
+    "showFiles": "./bins/index.js",
+    "changeNames": "./bins/changeName.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
