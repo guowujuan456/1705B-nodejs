@@ -1,7 +1,7 @@
-const router=require('./router/index')
-const Koa=require('koa')
-const koa=new Koa()
-koa.use(router.routes()).use(router.allowedMethods());
-koa.listen(7002, () => {
-  console.log("server running...");
-});
+let Koa=require('koa')
+let app=new Koa()
+let homerouter=require('./router/index')
+app.use(homerouter.routes(),homerouter.allowedMethods())
+app.listen(8000,()=>{
+  console.log('起服务成功')
+})
