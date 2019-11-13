@@ -21,16 +21,17 @@ app.use(router.allowedMethods())
 
 //查询列表
 router.get('/api/list',async ctx=>{
-    let { id } =ctx.query
-    console.log(id)
-    if (id || id === 0 ) {//容错处理
+    let { id, pageNum=1, limit=3 } = ctx.query
+    pageNum = (pageNum-1)*limit//起始下标
         try {
-            let data = await query('select * from banner_list where id=?',[id])
-            console.log(data)
+            let data = await query(`select * from banner_list limit ${pageNum},${limit}`)
+            let total = await query('select count(*) from banner_list')
+            console.log(total.msg[0]['count(*)'])
             if (data.code === 1) {
                 ctx.body={
                     code:1,
-                    msg:data
+                    num:total.msg[0]['count(*)'],
+                    data
                 }
             }
         } catch (error) {
@@ -40,26 +41,22 @@ router.get('/api/list',async ctx=>{
             }
         }
         
-    }else{
-        ctx.body={
-            code:3,
-            msg:'缺失参数'
-        }
-    }
+    
 })
-//创建数据
+
+//添加数据
 router.post('/api/add',async ctx=>{
     let { beizhu,types,sorts,time} =ctx.request.body
     if (beizhu) {//容错处理
         try {
             //添加数据
             let data = await query('insert into banner_list (beizhu,types,sorts,time) values (?,?,?,?)',[beizhu,types,sorts,time])
-            console.log(data)
             if (data.code === 1) {
                 ctx.body={
                     code:1,
                     msg:'添加成功',
-                    data:data
+                    data
+                    // data:data
                 }
             }
         } catch (error) {
@@ -78,14 +75,15 @@ router.post('/api/add',async ctx=>{
 })
 
 //修改数据
-router.post('/edit',async ctx=>{
+router.post('/api/edit',async ctx=>{
     let { beizhu,types,sorts,time,id} = ctx.request.body
     if (beizhu && id) {//容错处理
         try {
             await query('update banner_list set beizhu=?,types=?,sorts=?,time=? where id=?',[beizhu,types,sorts,time,id])
             ctx.body={
                 code:1,
-                msg:'修改成功'
+                msg:'修改成功',
+                data
             }
         } catch (error) {
             ctx.body={
@@ -104,8 +102,8 @@ router.post('/edit',async ctx=>{
 
 
 //删除数据
-router.get('/delete',async ctx=>{
-    let {id}=ctx.query
+router.post('/api/delete',async ctx=>{
+    let {id}=ctx.request.body
     console.log(id)
     if(id || id ===0){
         try {
@@ -128,22 +126,6 @@ router.get('/delete',async ctx=>{
         }
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
