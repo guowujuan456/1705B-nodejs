@@ -96,13 +96,13 @@
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
         </el-form-item> -->
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="que">确 定</el-button>
       </div>
     </el-dialog>
+
     <!-- 确认框 -->
     <el-dialog
       title="提示"
@@ -140,20 +140,13 @@ export default {
         //对话框
         dialogFormVisible: false,
         form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: '',
           beizhu:'',
           types:'',
-          sorts:'22',
+          sorts:'',
           time:''
         },
-        formLabelWidth: '120px'
+        formLabelWidth: '120px',
+        id:null
     }
   },
   mounted() {
@@ -163,23 +156,28 @@ export default {
       //添加
       handeladd(){
         this.dialogFormVisible=true
-        this.$http.post('/api/add',{ beizhu:this.form.beizhu, types:this.form.types, sorts:this.form.sorts, time:this.form.time}).then(res=>{
-          this.tableData=res.data.data.msg
-        })
+        // this.$http.post('/api/add',{ beizhu:this.form.beizhu, types:this.form.types, sorts:this.form.sorts, time:this.form.time}).then(res=>{
+        
+          // console.log(res.data.data.msg)
+
+          // this.tableData=res.data.data.msg
+        // })
         this.getlist()
 
       },
       //修改
       handleEdit(index, row) {
         // console.log(index, row);
-        // this.$http.post('/api')
         this.dialogFormVisible=true
-        this.$http.post('/api/edit',{beizhu:this.form.beizhu, types:this.form.types, sorts:this.form.sorts, time:this.form.time}).then(res=>{
-          // console.log(res.data)
-          this.tableData=res.data.data.data
-          this.getlist()
-
-        })
+        console.log(row.id)
+        this.id=row.id
+        console.log(this.id)
+        this.form = {
+          beizhu:row.beizhu,
+          types:row.types,
+          sorts:row.sorts,
+          time:row.time
+        }
         //删除后剩余的数据
         this.getlist()
       },
@@ -188,13 +186,13 @@ export default {
         console.log(index, row);
         console.log(row.id)
         this.dialogVisible=true;
-        this.$http.post('/api/delete',{id:row.id}).then(res=>{
-          // console.log(res.data)
-          this.getlist()
+        // this.$http.post('/api/delete',{id:row.id}).then(res=>{
+        //   // console.log(res.data)
+        //   this.getlist()
 
-        })
+        // })
         //删除后剩余的数据
-        this.getlist()
+        // this.getlist()
       },
       //分页
       handleSizeChange(val) {
@@ -204,25 +202,28 @@ export default {
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
       },
+      //对话框
+      que(){
+        this.dialogVisible=false;
+        
+      },
       //确认框
       handleClose(done) {
         this.$confirm('确认关闭？')
           .then(_ => {
             done();
-          this.getlist()
+          //this.getlist()
 
           })
           .catch(_ => {});
       },
       getlist(){
-        this.$http.get('/api/list').then(res=>{
-        if (res.data.code === 1) {
-          // console.log(res.data.data.msg)
-          // console.log(res.data.num)
-          this.total=res.data.num
-          this.tableData=res.data.data.msg
-        }
-    })
+          this.$http.get('/api/list').then(res=>{
+          if (res.data.code === 1) {
+            this.total=res.data.num
+            this.tableData=res.data.data.msg
+          }
+        })
       }
   }
 }
